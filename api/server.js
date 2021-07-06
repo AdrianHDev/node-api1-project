@@ -1,88 +1,106 @@
 // BUILD YOUR SERVER HERE
-const { find, findById, insert, update, remove } = require('../api/users/model');
-const express = require('express');
-
+const {
+  find,
+  findById,
+  insert,
+  update,
+  remove,
+} = require("../api/users/model");
+const express = require("express");
 
 const server = express();
 server.use(express.json());
 
-
-server.post('/api/users', (req, res) => {
+server.post("/api/users", (req, res) => {
   const { name, bio } = req.body;
-  if (!name || !bio){
-    res.status(400).json({ message: 'Missing name or bio.' });
-  }
-  else {
+  if (!name || !bio) {
+    res.status(400).json({ message: "Missing name or bio." });
+  } else {
     insert({ name, bio })
-      .then(newUser => {
+      .then((newUser) => {
         res.status(201).json(newUser);
       })
       .catch(() => {
-        res.status(500).json({ message: "There was an error while saving the user to the database", ...err });
-      })
+        res
+          .status(500)
+          .json({
+            message: "There was an error while saving the user to the database",
+            ...err,
+          });
+      });
   }
-})
+});
 
-server.get('/api/users', (req, res) => {
+server.get("/api/users", (req, res) => {
   find()
-    .then(users => {
+    .then((users) => {
       res.status(200).json(users);
-    }) 
-    .catch(() => {
-      res.status(500).json({ message: "Could not locate any user data" });
     })
-})
+    .catch(() => {
+      res
+        .status(500)
+        .json({ message: "The users information could not be retrieved" });
+    });
+});
 
-server.get('/api/users/:id', (req, res) => {
+server.get("/api/users/:id", (req, res) => {
   const { id } = req.params;
   findById(id)
-    .then(result => {
-      if(result) {
+    .then((result) => {
+      if (result) {
         res.status(200).json(result);
+      } else {
+        res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist" });
       }
-      else{
-        res.status(404).json({ message: "No user exists with specified ID." });
-      }
-    }) 
-    .catch(() => {
-      res.status(500).json({ message: "Could not obtain user info." });
     })
-})
+    .catch(() => {
+      res
+        .status(500)
+        .json({ message: "The user information could not be retrieved" });
+    });
+});
 
-server.delete('/api/users/:id', (req, res) => {
+server.delete("/api/users/:id", (req, res) => {
   const { id } = req.params;
   remove(id)
-    .then(removed => {
-      if(removed) {
-        res.status(200).json(removed);
-      }
-      else{
-        res.status(404).json({ message: "No user exists with specified ID" });
+    .then((result) => {
+      if (result) {
+        res.status(200).json(result);
+      } else {
+        res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist" });
       }
     })
     .catch(() => {
-      res.status(500).json({ message: "Server Error." });
-    })
-})
+      res.status(500).json({ message: "The user could not be removed" });
+    });
+});
 
-server.put('/api/users/:id', (req, res) => {
+server.put("/api/users/:id", (req, res) => {
   const { id } = req.params;
   const { name, bio } = req.body;
-  if (!name || !bio){
-    res.status(400).json({ message: 'Missing name or bio.' });
-  }
-  else {
-    update(id, {name, bio})
-      .then(response => {
-        if(response) {
-          res.status(200).json(response);
+  if (!name || !bio) {
+    res
+      .status(400)
+      .json({ message: "Please provide name and bio for the user" });
+  } else {
+    update(id, { name, bio })
+      .then((result) => {
+        if (result) {
+          res.status(200).json(result);
+        } else {
+          res
+            .status(404)
+            .json({ message: "The user with the specified ID does not exist" });
         }
-        else{
-          res.status(404).json({ message: "No user exists with specified ID" });
-        }
-        }) // eslint-disable-next-line
-      .catch(e => {
-        res.status(500).json({ message: "Server Error" });
       })
+      .catch(() => {
+        res
+          .status(500)
+          .json({ message: "The user information could not be modified" });
+      });
   }
-})
+});
