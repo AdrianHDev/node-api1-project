@@ -8,13 +8,13 @@ const {
 } = require("../api/users/model");
 const express = require("express");
 
-const server = express();
-server.use(express.json());
+const app = express();
+app.use(express.json());
 
-server.post("/api/users", (req, res) => {
+app.post("/api/users", (req, res) => {
   const { name, bio } = req.body;
   if (!name || !bio) {
-    res.status(400).json({ message: "Missing name or bio." });
+    res.status(400).json({ message: "Please provide name and bio for the user" });
   } else {
     insert({ name, bio })
       .then((newUser) => {
@@ -25,13 +25,12 @@ server.post("/api/users", (req, res) => {
           .status(500)
           .json({
             message: "There was an error while saving the user to the database",
-            ...err,
           });
       });
   }
 });
 
-server.get("/api/users", (req, res) => {
+app.get("/api/users", (req, res) => {
   find()
     .then((users) => {
       res.status(200).json(users);
@@ -43,7 +42,7 @@ server.get("/api/users", (req, res) => {
     });
 });
 
-server.get("/api/users/:id", (req, res) => {
+app.get("/api/users/:id", (req, res) => {
   const { id } = req.params;
   findById(id)
     .then((result) => {
@@ -62,7 +61,7 @@ server.get("/api/users/:id", (req, res) => {
     });
 });
 
-server.delete("/api/users/:id", (req, res) => {
+app.delete("/api/users/:id", (req, res) => {
   const { id } = req.params;
   remove(id)
     .then((result) => {
@@ -79,7 +78,7 @@ server.delete("/api/users/:id", (req, res) => {
     });
 });
 
-server.put("/api/users/:id", (req, res) => {
+app.put("/api/users/:id", (req, res) => {
   const { id } = req.params;
   const { name, bio } = req.body;
   if (!name || !bio) {
