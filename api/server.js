@@ -1,11 +1,6 @@
 // BUILD YOUR SERVER HERE
-const {
-  find,
-  findById,
-  insert,
-  update,
-  remove,
-} = require("../api/users/model");
+
+const User = require('./users/model')
 const express = require("express");
 
 const app = express();
@@ -16,7 +11,7 @@ app.post("/api/users", (req, res) => {
   if (!name || !bio) {
     res.status(400).json({ message: "Please provide name and bio for the user" });
   } else {
-    insert({ name, bio })
+    User.insert({ name, bio })
       .then((newUser) => {
         res.status(201).json(newUser);
       })
@@ -31,7 +26,7 @@ app.post("/api/users", (req, res) => {
 });
 
 app.get("/api/users", (req, res) => {
-  find()
+  User.find()
     .then((users) => {
       res.status(200).json(users);
     })
@@ -44,7 +39,7 @@ app.get("/api/users", (req, res) => {
 
 app.get("/api/users/:id", (req, res) => {
   const { id } = req.params;
-  findById(id)
+  User.findById(id)
     .then((result) => {
       if (result) {
         res.status(200).json(result);
@@ -63,7 +58,7 @@ app.get("/api/users/:id", (req, res) => {
 
 app.delete("/api/users/:id", (req, res) => {
   const { id } = req.params;
-  remove(id)
+  User.remove(id)
     .then((result) => {
       if (result) {
         res.status(200).json(result);
@@ -86,7 +81,7 @@ app.put("/api/users/:id", (req, res) => {
       .status(400)
       .json({ message: "Please provide name and bio for the user" });
   } else {
-    update(id, { name, bio })
+    User.update(id, { name, bio })
       .then((result) => {
         if (result) {
           res.status(200).json(result);
