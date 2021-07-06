@@ -98,3 +98,5 @@ app.put("/api/users/:id", (req, res) => {
       });
   }
 });
+
+module.exports = app;
